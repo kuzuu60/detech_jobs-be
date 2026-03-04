@@ -1,7 +1,18 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Patch,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { JobsService } from './jobs.service';
-import { CreateJobDto } from './dto/create-job.dto';
-import { Job } from './job.interface';
+import type { CreateJobDto } from './dto/create-job.dto';
+import type { Job } from './job.interface';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('jobs')
 export class JobsController {
@@ -9,22 +20,32 @@ export class JobsController {
 
   @Get()
   getJobs(): Job[] {
-  return this.jobsService.findAll();
-}
+    return this.jobsService.findAll();
+  }
+
+  @UseGuards(AuthGuard('jwt'))
   @Post()
-  createJob(@Body() body: CreateJobDto) {
+  createJob(@Body() body: CreateJobDto): Job {
     return this.jobsService.create(body);
   }
-  @Get(':id') 
-  getJob(@Param('id') id:string) {
-    return this.jobsService.findOne(Number(id));
+
+  @Get(':id')
+  getJob(@Param('id', ParseIntPipe) id: number): Job {
+    return this.jobsService.findOne(id);
   }
+
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
-  deleteJob(@Param('id') id:string){
-    return this.jobsService.remove(Number(id));
+  deleteJob(@Param('id', ParseIntPipe) id: number): { message: string } {
+    return this.jobsService.remove(id);
   }
-//   @Post()
-//   createJob(@Body() body: any) {
-//     return this.jobsService.create(body);
-//   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch(':id')
+  updateJob(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: Partial<CreateJobDto>,
+  ): Job {
+    return this.jobsService.update(id, body);
+  }
 }
