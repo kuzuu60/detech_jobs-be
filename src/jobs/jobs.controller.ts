@@ -10,7 +10,7 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { JobsService } from './jobs.service';
-import type { CreateJobDto } from './dto/create-job.dto';
+import { CreateJobDto } from './dto/create-job.dto';
 import type { Job } from './job.interface';
 import { AuthGuard } from '@nestjs/passport';
 
