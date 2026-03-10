@@ -12,7 +12,11 @@ import {
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import type { Job } from './job.interface';
-import { AuthGuard } from '@nestjs/passport';
+
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { RolesGuard } from '../auth/guard/roles.guard';
+import { Roles } from '../auth/decorator/roles.decorator';
+import { Role } from '../auth/enum/roles.enum';
 
 @Controller('jobs')
 export class JobsController {
@@ -23,8 +27,9 @@ export class JobsController {
     return this.jobsService.findAll();
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   createJob(@Body() body: CreateJobDto): Job {
     return this.jobsService.create(body);
   }
@@ -34,14 +39,17 @@ export class JobsController {
     return this.jobsService.findOne(id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Delete(':id')
+   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   deleteJob(@Param('id', ParseIntPipe) id: number): { message: string } {
     return this.jobsService.remove(id);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   updateJob(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: Partial<CreateJobDto>,
