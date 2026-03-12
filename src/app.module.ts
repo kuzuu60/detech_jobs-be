@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JobsModule } from './jobs/jobs.module';
 import { AuthModule } from './auth/auth.module';
+import { ApplicationsModule } from './applications/applications.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     JobsModule,
     AuthModule,
+    ApplicationsModule,
   ],
 })
 export class AppModule implements OnApplicationBootstrap {

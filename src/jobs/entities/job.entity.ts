@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  OneToMany,
+} from 'typeorm';
+
+import { Application } from '../../applications/entities/application.entity';
 
 @Entity()
 export class Job {
@@ -27,7 +35,7 @@ export class Job {
   offered_salary: number;
 
   @Column()
-  apply_before: string; 
+  apply_before: string;
 
   @Column()
   experience_required: number;
@@ -46,4 +54,8 @@ export class Job {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  // relation with applications
+  @OneToMany(() => Application, (application) => application.job)
+  applications: Application[];
 }
