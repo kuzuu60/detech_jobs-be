@@ -22,11 +22,7 @@ export class ApplicationsService {
 
   async apply(jobId: number, dto: CreateApplicationDto) {
 
-  console.log("Looking for job:", jobId);
-
   const job = await this.jobRepo.findOneBy({ id: jobId });
-
-  console.log("Job found:", job);
 
   if (!job) {
     throw new NotFoundException('Job not found');
