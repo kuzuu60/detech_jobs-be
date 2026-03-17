@@ -1,28 +1,30 @@
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Admin } from '../admin/admin.entity';
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    @InjectRepository(Admin)
+    private adminRepo: Repository<Admin>,
+  ) {}
 
-  private users = [
-    {
-      id: 1,
-      username: 'admin',
-      password: bcrypt.hashSync('admin123', 10),
-      role: 'admin',
-    },
-  ];
+  async validateUser(username: string, password: string) {
+    const user = await this.adminRepo.findOne({
+      where: { username },
+    });
 
-  async validateUser(username: string, password: string): Promise<any> {
-    const user = this.users.find((u) => u.username === username);
+    if (!user) return null;
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      const { password, ...result } = user;
-      return result;
-    }
-    return null;
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return null;
+
+    const  { password: _, ...result } = user;
+    return result;
   }
 
   async login(user: any) {
@@ -36,5 +38,29 @@ export class AuthService {
   return {
     access_token: this.jwtService.sign(payload),
   };
+}
+  async seedAdmin() {
+  const password = process.env.ADMIN_PASSWORD;
+  const username = process.env.ADMIN_USERNAME;
+
+  if (!password || !username) {
+    throw new Error('ADMIN_USERNAME or ADMIN_PASSWORD not set in .env');
+  }
+
+  const existing = await this.adminRepo.findOne({
+    where: { username },
+  });
+
+  if (!existing) {
+    const hashed = await bcrypt.hash(password, 10);
+
+    await this.adminRepo.save({
+      username,
+      password: hashed,
+      role: 'admin',
+    });
+
+    console.log('✅ Admin seeded');
+  }
 }
 }
