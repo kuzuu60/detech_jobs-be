@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch, UseGuards, ParseIntPipe, Query } from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { Job } from './entities/job.entity';
@@ -6,6 +6,7 @@ import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { Role } from '../auth/enum/roles.enum';
+import { SearchJobDto } from './dto/search-job.dto';
 
 @Controller('jobs')
 export class JobsController {
@@ -15,12 +16,18 @@ export class JobsController {
   async getJobs(): Promise<Job[]> {
     return await this.jobsService.findAll();
   }
+  
+  @Get('search')
+  async searchJobs(@Query() query: SearchJobDto) {
+    return this.jobsService.searchByTitle(query.title);
+    }
 
   @Get(':id')
   async getJob(@Param('id', ParseIntPipe) id: number): Promise<Job> {
     return await this.jobsService.findOne(id);
   }
 
+  
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)

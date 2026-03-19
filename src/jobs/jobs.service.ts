@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Job } from './entities/job.entity';
 import { CreateJobDto } from './dto/create-job.dto';
+import { ILike } from 'typeorm';
 
 @Injectable()
 export class JobsService {
@@ -23,6 +24,16 @@ export class JobsService {
   return job;
 }
 
+  async searchByTitle(title?: string): Promise<Job[]> {
+  if (!title) return [];
+
+  return this.jobsRepo.find({
+    where: {
+      title: ILike(`%${title}%`),
+    },
+  });
+}
+   
   async create(dto: CreateJobDto): Promise<Job> {
     const job = this.jobsRepo.create(dto);
     return this.jobsRepo.save(job);
@@ -42,4 +53,5 @@ export class JobsService {
     return { message: `Job with id ${id} has been removed` };
   }
 }
+
 
