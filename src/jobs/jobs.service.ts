@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { Job } from './entities/job.entity';
 import { CreateJobDto } from './dto/create-job.dto';
 import { ILike } from 'typeorm';
+import { PaginationDto } from './dto/pagination.dto';
+
 
 @Injectable()
 export class JobsService {
@@ -12,9 +14,24 @@ export class JobsService {
     private jobsRepo: Repository<Job>,
   ) {}
 
-  findAll(): Promise<Job[]> {
-    return this.jobsRepo.find();
-  }
+  async findAll(query: PaginationDto): Promise<any> {
+  const page = parseInt(query.page ?? '1');
+  const limit = parseInt(query.limit ?? '10');
+
+  const skip = (page - 1) * limit;
+
+  const [jobs, total] = await this.jobsRepo.findAndCount({
+    skip,
+    take: limit,
+  });
+
+  return {
+    data: jobs,
+    total,
+    page,
+    lastPage: Math.ceil(total / limit),
+  };
+}
 
   async findOne(id: number): Promise<Job> {
   const job = await this.jobsRepo.findOneBy({ id });

@@ -7,15 +7,16 @@ import { RolesGuard } from '../auth/guard/roles.guard';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { Role } from '../auth/enum/roles.enum';
 import { SearchJobDto } from './dto/search-job.dto';
+import { PaginationDto } from './dto/pagination.dto';
 
 @Controller('jobs')
 export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
 
   @Get()
-  async getJobs(): Promise<Job[]> {
-    return await this.jobsService.findAll();
-  }
+getJobs(@Query() query: PaginationDto) {
+  return this.jobsService.findAll(query);
+}
   
   @Get('search')
   async searchJobs(@Query() query: SearchJobDto) {
@@ -24,7 +25,7 @@ export class JobsController {
 
   @Get(':id')
   async getJob(@Param('id', ParseIntPipe) id: number): Promise<Job> {
-    return await this.jobsService.findOne(id);
+    return this.jobsService.findOne(id);
   }
 
   
@@ -32,7 +33,7 @@ export class JobsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   async createJob(@Body() body: CreateJobDto): Promise<Job> {
-    return await this.jobsService.create(body);
+    return this.jobsService.create(body);
   }
 
   @Patch(':id')
@@ -42,13 +43,13 @@ export class JobsController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: Partial<CreateJobDto>,
   ): Promise<Job> {
-    return await this.jobsService.update(id, body);
+    return this.jobsService.update(id, body);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   async deleteJob(@Param('id', ParseIntPipe) id: number): Promise<{ message: string }> {
-    return await this.jobsService.remove(id);
+    return this.jobsService.remove(id);
   }
 }
