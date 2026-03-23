@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth/auth.service';
-  
+import { SanitizePipe } from './common/pipes/sanitize.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,6 +17,7 @@ async function bootstrap() {
       transform: true,
       forbidNonWhitelisted: true,
     }),
+    new SanitizePipe(),
   );
 
   const configService = app.get(ConfigService);

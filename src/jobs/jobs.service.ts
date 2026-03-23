@@ -59,7 +59,11 @@ export class JobsService {
   async update(id: number, dto: Partial<CreateJobDto>): Promise<Job> {
     const job = await this.findOne(id);
     if (!job) throw new NotFoundException(`Job with id ${id} not found`);
-    Object.assign(job, dto);
+    for (const key in dto) {
+    if (dto[key] !== undefined) {
+    job[key] = dto[key];
+  }
+}
     return this.jobsRepo.save(job);
   }
 
