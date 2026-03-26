@@ -1,0 +1,30 @@
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { FirebaseAuthService } from './firebase-auth.service';
+
+@Injectable()
+export class FirebaseAuthGuard implements CanActivate {
+  constructor(private firebaseAuthService: FirebaseAuthService) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+
+    const authHeader = request.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new UnauthorizedException('No valid token');
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    const decoded = await this.firebaseAuthService.verifyToken(token);
+
+    request.user = decoded;
+
+    return true;
+  }
+}
