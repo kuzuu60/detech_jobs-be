@@ -1,12 +1,12 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import * as admin from 'firebase-admin';
+import admin from '../../config/firebase';
 
 @Injectable()
 export class FirebaseAuthService {
   async verifyToken(token: string) {
     try {
       return await admin.auth().verifyIdToken(token);
-    } catch (err) {
+    } catch (error) {
       throw new UnauthorizedException('Invalid Firebase token');
     }
   }

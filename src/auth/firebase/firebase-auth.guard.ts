@@ -16,7 +16,7 @@ export class FirebaseAuthGuard implements CanActivate {
     const authHeader = request.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException('No valid token');
+      throw new UnauthorizedException('No token provided');
     }
 
     const token = authHeader.split(' ')[1];

@@ -14,9 +14,9 @@ export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
 
   @Get()
-getJobs(@Query() query: PaginationDto) {
+  getJobs(@Query() query: PaginationDto) {
   return this.jobsService.findAll(query);
-}
+  }
   
   @Get('search')
   async searchJobs(@Query() query: SearchJobDto) {
