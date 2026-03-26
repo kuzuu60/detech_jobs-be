@@ -2,7 +2,8 @@ import { Controller, Get, Post, Body, Param, Delete, Patch, UseGuards, ParseIntP
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './dto/create-job.dto';
 import { Job } from './entities/job.entity';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+// import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { FirebaseAuthGuard } from 'src/auth/firebase/firebase-auth.guard';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { Role } from '../auth/enum/roles.enum';
@@ -30,14 +31,14 @@ export class JobsController {
 
   
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   async createJob(@Body() body: CreateJobDto): Promise<Job> {
     return this.jobsService.create(body);
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   async updateJob(
     @Param('id', ParseIntPipe) id: number,
@@ -47,7 +48,7 @@ export class JobsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   async deleteJob(@Param('id', ParseIntPipe) id: number): Promise<{ message: string }> {
     return this.jobsService.remove(id);
