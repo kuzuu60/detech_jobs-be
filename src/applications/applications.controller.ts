@@ -11,10 +11,11 @@ import {
 import { ApplicationsService } from './applications.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
 
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+// import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { Role } from '../auth/enum/roles.enum';
+import { FirebaseAuthGuard } from 'src/auth/firebase/firebase-auth.guard';
 
 @Controller('applications')
 export class ApplicationsController {
@@ -30,7 +31,7 @@ export class ApplicationsController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(FirebaseAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   getAll() {
     return this.appService.getAllApplications();

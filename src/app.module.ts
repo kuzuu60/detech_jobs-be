@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JobsModule } from './jobs/jobs.module';
 import { AuthModule } from './auth/auth.module';
 import { ApplicationsModule } from './applications/applications.module';
+import { FirebaseModule } from './auth/firebase/firebase.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ApplicationsModule } from './applications/applications.module';
     JobsModule,
     AuthModule,
     ApplicationsModule,
+    FirebaseModule,
   ],
 })
 export class AppModule implements OnApplicationBootstrap {
