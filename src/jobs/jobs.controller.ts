@@ -9,6 +9,7 @@ import { Roles } from '../auth/decorator/roles.decorator';
 import { Role } from '../auth/enum/roles.enum';
 import { SearchJobDto } from './dto/search-job.dto';
 import { PaginationDto } from './dto/pagination.dto';
+import admin from 'src/config/firebase';
 
 @Controller('jobs')
 export class JobsController {
@@ -27,6 +28,12 @@ export class JobsController {
   @Get(':id')
   async getJob(@Param('id', ParseIntPipe) id: number): Promise<Job> {
     return this.jobsService.findOne(id);
+  }
+
+  @Get('firebase-check')
+  async firebaseCheck() {
+    const result = await admin.auth().listUsers(1);
+    return result;
   }
 
   

@@ -15,8 +15,11 @@ export class JobsService {
   ) {}
 
   async findAll(query: PaginationDto): Promise<any> {
-  const page = parseInt(query.page ?? '1');
-  const limit = parseInt(query.limit ?? '10');
+  const parsedPage = parseInt(query.page ?? '1', 10);
+  const parsedLimit = parseInt(query.limit ?? '10', 10);
+
+  const page = isNaN(parsedPage) ? 1 : parsedPage;
+  const limit = isNaN(parsedLimit) ? 10 : parsedLimit;
 
   const skip = (page - 1) * limit;
 
@@ -58,18 +61,12 @@ export class JobsService {
 
   async update(id: number, dto: Partial<CreateJobDto>): Promise<Job> {
     const job = await this.findOne(id);
-    if (!job) throw new NotFoundException(`Job with id ${id} not found`);
-    for (const key in dto) {
-    if (dto[key] !== undefined) {
-    job[key] = dto[key];
-  }
-}
+    Object.assign(job, dto);
     return this.jobsRepo.save(job);
   }
 
   async remove(id: number): Promise<{ message: string }> {
     const job = await this.findOne(id);
-    if (!job) throw new NotFoundException(`Job with id ${id} not found`);
     await this.jobsRepo.remove(job);
     return { message: `Job with id ${id} has been removed` };
   }
